@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Méthodologie philosophique — Yann Frédéric Mangourny</title>
+<meta name="description" content="Application pédagogique : Méthodologie philosophique, synthèse du cours de Robert Lévy (Collège Sévigné). Dissertation, commentaire, problématisation. Par Yann Frédéric Mangourny — AFCIP." />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: #04080e; color: #d8eaf6; font-family: Georgia, serif; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #07101a; }
+  ::-webkit-scrollbar-thumb { background: #163870; border-radius: 2px; }
+  @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+  .fade-in { animation: fadeIn 0.4s ease forwards; }
+  button { font-family: Georgia, serif; }
+  input { font-family: Georgia, serif; }
+  textarea { font-family: Georgia, serif; }
+  a { font-family: Georgia, serif; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const C = {
+  bg:'#04080e',surface:'#07101a',card:'#0b1724',cardHover:'#0f1e2e',
+  border:'#122030',borderMid:'#1a3050',borderBright:'#254878',
+  b1:'#163870',b2:'#1e5aa8',b3:'#3a8cd0',b4:'#70b8e4',b5:'#a8d4ec',
+  white:'#d8eaf6',whiteBright:'#eef4fa',muted:'#3a6082',mutedLight:'#5a88a8',
+  gold:'#a07830',goldLight:'#c09a50',
+};
+
+const API_KEY = 'VOTRE_CLE_GROQ'; // ← Collez votre clé Groq ici (console.groq.com)
+
+const SYSTEM_PROMPT = `Tu es un assistant pédagogique expert en méthodologie philosophique. Tu réponds uniquement à partir du cours ci-dessous (synthèse du cours de Robert Lévy, Collège Sévigné, par Yann Frédéric Mangourny). Cite les paragraphes (§) pertinents. Sois précis, pédagogue et rigoureux.
+
+MÉTHODOLOGIE PHILOSOPHIQUE — Synthèse du cours de Robert Lévy
+
+A) REMARQUES GÉNÉRALES
+§1 — La dissertation ou le commentaire doit être l'expression même ou le signe d'une authentique recherche philosophique.
+§2 — Il faut savoir faire une introduction : dégager le sens de la question, indiquer comment on en conçoit la ou les possibles tentatives de résolution, indiquer quelle problématique est adoptée, quel est l'enjeu de cette problématique, veiller à la cohérence du propos, indiquer et marquer nettement son intention.
+§3 — Deux remarques de méthode s'imposent : A) La méthode ne peut remplacer le savoir ; elle se situe en amont (comment apprendre) et en aval (comment l'exploiter). B) Elle n'a pas d'efficacité immédiate : « il faut prendre une ferme et constante résolution de ne manquer pas une seule fois à observer les règles de la méthode » — Descartes, 2ème partie du Discours de la méthode.
+§4 — La méthode suppose une situation : A) Le bon sens est la chose du monde la mieux partagée. B) L'ensemble des savoirs humains ne satisfait pas au désir extrême d'apprendre à distinguer le vrai d'avec le faux. Ce qui rend nécessaire la méthode : l'écart entre la présence universelle d'un bon sens et l'absence de certitudes.
+§5 — Conseils de lecture : Lire des manuels de philosophie (Cuvillier, Gourinat). Lire des textes d'Alain et de Valéry (Propos, Cahiers). Être familier avec une grande philosophie.
+§6 — Il faut voir le sujet ainsi qu'au premier jour. Le bon candidat emprunte au génie l'originalité et l'exemplarité, et au savant la capacité à expliquer sa démarche.
+§7 — Rien de ce que l'on pose ne va de soi. Le haut niveau d'une pensée n'est jamais fait que d'idées claires et distinctes, c'est-à-dire simples.
+§8 — Il faut amener progressivement le lecteur à saisir l'intérêt d'un détour par la philosophie, les philosophes, les grandes œuvres.
+§9 — Il faut imposer l'intérêt du détour par Platon, Descartes, Kant, Hegel, Heidegger.
+§10 — Rien ne va de soi : il faut constamment s'interroger sur la validité des raisons qui amènent la philosophie à s'intéresser à tel problème.
+§11 — a) « les grands problèmes courent les rues » / b) « bien peu réussissent à voir un problème dans les réalités auxquelles nous sommes habitués. »
+§12 — Il n'y a pas que des problèmes philosophiques : logiques, physiques, éthiques. Le problème d'Antigone peut être repris sous la forme du conflit des devoirs.
+§13 — L'écrit ne peut retenir aucune connaissance durable (cf. Phèdre de Platon).
+§14 — Thèse de Platon : un livre n'est qu'un aide-mémoire. L'écriture ressemble à la peinture : l'une comme l'autre ne parlent pas. Le propre de la lettre est d'être lettre morte.
+§15 — La bonne copie est une copie inquiète, qui trouve dans sa tension interne les causes de son développement. La problématique = faire dérailler ce qui semble aller de soi. Image du poisson torpille, torpillant et torpillé.
+§16 — Conclusion : penser n'est rien d'autre que cela, dialogue de l'âme avec elle-même.
+
+B) REMARQUES SUR LA DISSERTATION
+§B1 — Le sujet doit se considérer comme une énigme — un énoncé sans sujet (qui parle ?), sans destinataire précis.
+§B2 — Signification (signifié) vs sens (valeur précise en contexte). À signification identique, sens différents.
+§B3 — Hypothèse n°1 : problématiser = montrer qu'à partir d'une signification constante, il y a pluralité de sens selon les contextes.
+§B4 — La signification est donnée (dictionnaire) ; le sens est construit. L'opposition signification/sens recoupe analyse/synthèse.
+§B5 — Hypothèse n°2 : problématiser = faire jouer les significations pour qu'il y ait plusieurs sens possibles.
+§B6 — Théorie contextuelle du sens : un mot n'a aucun sens hors des contextes.
+§B7 — Hypothèse n°3 : problématiser = faire varier le sens en faisant varier les contextes théoriques.
+§B8 — Sujets jumeaux : montrer qu'il n'y a pas de synonymes absolus.
+§B9 — Toujours se demander : pourquoi ce sujet ? Pourquoi cette formulation ? Quel topique philosophique ?
+
+C) REMARQUES SUR LE COMMENTAIRE
+§C1 — Commenter = parler sur la pensée des autres ; acte de compréhension.
+§C2 — Humilité : donner la parole au texte. Le sens est premier, je suis second.
+§C3 — Patiente construction de discours sur les discours.
+§C4 — Interroger le texte sur ce qu'il dit (lettre) et ce qu'il a voulu dire (système).
+§C5 — a) excès du signifié sur le signifiant ; b) le non-dit dort dans la parole.
+§C6 — Lien complexe, brisé, problématique entre signifiant et signifié.
+§C7 — La parole est un acte de traduction, donc de trahison.
+§C8 — Rapport à l'Exégèse : écouter le Verbe à travers les symboles, les images.
+§C9 — Risque n°1 : le suivisme.
+§C10 — Risque n°2 : la variation sur le thème majeur.
+§C11 — Risque n°3 : réduire le commentaire à une explication terme à terme.`;
+
+const DOC_SECTIONS = [
+  { id:'A', title:'A — Remarques générales', items:[
+    [1,"La dissertation ou le commentaire doit être l'expression même ou le signe d'une authentique recherche philosophique."],
+    [2,"Il faut savoir faire une introduction : dégager le sens de la question, indiquer comment on en conçoit les possibles tentatives de résolution, indiquer quelle problématique est adoptée, quel est l'enjeu de cette problématique, veiller à la cohérence du propos, indiquer et marquer nettement son intention."],
+    [3,"Deux remarques de méthode s'imposent : A) La méthode ne peut remplacer le savoir ; elle se situe en amont (comment apprendre) et en aval (comment l'exploiter). B) Elle n'a pas d'efficacité immédiate : « il faut prendre une ferme et constante résolution de ne manquer pas une seule fois à observer les règles de la méthode » — Descartes, 2ème partie du Discours de la méthode."],
+    [4,"La méthode suppose une situation qui manifeste la nécessité de son exigence : A) Le bon sens est la chose du monde la mieux partagée. B) L'ensemble des savoirs humains ne satisfait pas au désir extrême d'apprendre à distinguer le vrai d'avec le faux. Ce qui rend nécessaire la méthode : l'écart entre la présence universelle d'un bon sens et l'absence de certitudes, de résultats."],
+    [5,"Conseils de lecture : Lire des manuels de philosophie (Cuvillier, Gourinat). Lire des textes d'Alain et de Valéry (Propos, Cahiers). Être familier avec une grande philosophie."],
+    [6,"Il faut essayer de voir le sujet ainsi qu'au premier jour, ainsi qu'un nouveau-né ; avoir les qualités du génie selon Kant, mais aussi du savant : être original et exemplaire, et parfaitement compréhensible par un entendement qui ne sait rien mais qui peut tout comprendre."],
+    [7,"Il faut considérer que rien de ce que l'on pose ne va de soi ; il faut sortir de la familiarité que l'on entretient avec sa propre pensée. Le haut niveau d'une pensée n'est jamais fait que d'idées claires et distinctes, c'est-à-dire d'idées simples."],
+    [8,"Il faut amener, progressivement, patiemment, par degrés le lecteur à saisir l'intérêt d'un détour par la philosophie, les philosophes, les grandes œuvres."],
+    [9,"Il faut imposer l'intérêt du détour par la République de Platon, les Méditations métaphysiques de Descartes, la Critique de la Raison Pure de Kant, la Phénoménologie de l'esprit de Hegel, ou Être et Temps de Heidegger."],
+    [10,"Rien ne va de soi : il est très fécond de constamment s'interroger sur la validité des raisons qui amènent la philosophie à s'intéresser à tel problème, à telle question."],
+    [11,"Deux choses difficiles à conjuguer : a) « les grands problèmes courent les rues » / b) « bien peu réussissent à voir un problème dans les réalités que nous vivons et auxquelles nous sommes habitués : l'œil n'est pas accommodé pour une telle perception. »"],
+    [12,"Il n'y a pas que des problèmes philosophiques (Aristote, Topiques) : problèmes logiques, physiques, éthiques. Le problème d'Antigone peut être repris en philosophie sous la forme du conflit des devoirs."],
+    [13,"Il faut penser aux limites propres de l'écriture et de la parole dans le dialogue (cf. Phèdre de Platon). L'écrit ne peut retenir aucune connaissance durable."],
+    [14,"Thèse de Platon : un livre n'est qu'un aide-mémoire qui rappelle à celui qui les connaît déjà les choses traitées. L'écriture ressemble à la peinture : l'une comme l'autre ne parlent pas. Le propre de la lettre est d'être lettre morte."],
+    [15,"Comment s'en sortir ? Savoir dialoguer avec soi-même. La bonne copie est une copie inquiète, qui trouve dans sa tension interne les causes et les motifs de son développement et de son rebondissement. La problématique = faire dérailler ce qui semble aller de soi. Image du poisson torpille, torpillant et torpillé."],
+    [16,"Conclusion : savoir — lorsqu'on est en train d'écrire — se lire, savoir lorsqu'on est en train de parler s'entendre : penser n'est rien d'autre que cela, dialogue de l'âme avec elle-même."],
+  ]},
+  { id:'B', title:'B — Remarques sur la dissertation', items:[
+    [1,"La question du sens : le sujet, quelle que soit sa forme, doit se considérer comme une énigme — un énoncé sans sujet (qui parle ?), sans destinataire précis, sans contexte psychique."],
+    [2,"Première distinction : la signification d'une unité linguistique c'est son signifié ; son sens c'est la valeur précise qu'a ce signifié dans un contexte unique. À signification identique, sens différents."],
+    [3,"Hypothèse n°1 : problématiser = montrer qu'à partir d'une signification constante, il y a une pluralité de sens selon les contextes théoriques, et interroger la possibilité de leur unité éventuelle."],
+    [4,"Deuxième distinction : la signification est donnée (dictionnaire) ; le sens est construit comme ce qu'il faut entendre face à un discours dans sa totalité. L'opposition signification/sens recoupe l'opposition analyse/synthèse."],
+    [5,"Hypothèse n°2 : problématiser = faire jouer les significations pour qu'il y ait plusieurs sens possibles. Ex. : « Peut-on parler pour ne rien dire ? » — faire varier le « pour » = faire varier le sens en conséquence."],
+    [6,"Troisième distinction : comment choisir le bon sens ? Théorie contextuelle du sens : un mot n'a aucun sens hors des contextes où il apparaît."],
+    [7,"Hypothèse n°3 : problématiser = faire varier le sens en faisant varier les contextes théoriques (physique, théologique, psychologique, juridique, politique...). Ce qui caractérise un sujet de philosophie, c'est son ouverture potentielle."],
+    [8,"Sujets jumeaux (événement/phénomène, désirer/vouloir, croyance/foi...) : la réflexion philosophique montre qu'il n'y a pas de synonymes absolus."],
+    [9,"Il faut toujours se demander : a) pourquoi ce sujet plutôt qu'un autre ? b) pourquoi cette formulation ? c) que vise le sujet comme topique philosophique ?"],
+  ]},
+  { id:'C', title:'C — Remarques sur le commentaire', items:[
+    [1,"Commenter = parler sur la pensée des autres ; chercher à dire ce qu'ils ont dit. Commenter est avant tout un acte de compréhension comme saisie d'un sens grâce à une série d'opérations complexes."],
+    [2,"Il y a une forme d'humilité dans tout commentaire : donner la parole au texte. « Ce qui parle à travers moi c'est un sens qui me dépasse et qui m'organise. Le sens est premier, je suis second et à service. »"],
+    [3,"« Nous sommes voués historiquement à l'histoire, à la patiente construction de discours sur les discours, à la tâche d'entendre ce qui a été dit. »"],
+    [4,"Attitude ambiguë : interroger le texte sur ce qu'il dit (partir de la lettre) et sur ce qu'il a voulu dire (partir du système). Problématiser un texte = repérer des contradictions entre l'extrait et le système."],
+    [5,"a) commenter = admettre un excès du signifié sur le signifiant (la pensée reste dans l'ombre) ; b) commenter = penser que le non-dit dort dans la parole."],
+    [6,"Commenter = inventer un lien complexe, non simple, brisé, problématique entre signifiant et signifié."],
+    [7,"Le commentaire repose sur le postulat que la parole est un acte de traduction, donc de trahison. Les mots montrent la pensée mais la cachent."],
+    [8,"Rapport du commentaire à l'Exégèse : écouter le Verbe de Dieu à travers les interdits, les symboles, les images sensibles, tout l'appareil de la Révélation."],
+    [9,"Risque n°1 — Le suivisme : rumination de termes qui ne font pas question. Commenter doit faire parler le texte, l'interroger, le problématiser."],
+    [10,"Risque n°2 — La variation sur le thème majeur : traiter l'explication comme une dissertation. Double impératif : s'attacher à la lettre et s'en éloigner pour comparer."],
+    [11,"Risque n°3 — Réduire à une explication terme à terme. Il faut conjuguer explication et interprétation : Contre qui cela est-il dit ? Quels effets l'auteur attend-il ? À quoi sert cette machinerie philosophique ?"],
+  ]},
+];
+
+const QCM_DATA = [
+  {q:"Selon le cours, la dissertation philosophique doit être avant tout :",opts:["Une démonstration logique rigoureuse","L'expression d'une authentique recherche philosophique","Un résumé des positions des grands philosophes","Une réponse directe et claire à la question posée"],correct:1,ref:"§A1"},
+  {q:"Qu'est-ce qu'une « copie inquiète » selon le cours ?",opts:["Une copie pleine de doutes et d'hésitations","Une copie qui cite abondamment les philosophes","Une copie qui trouve dans sa tension interne les causes de son développement","Une copie qui pose beaucoup de questions sans répondre"],correct:2,ref:"§A15"},
+  {q:"Selon Platon (Phèdre), qu'est-ce qu'un livre ?",opts:["Le meilleur moyen de transmettre la connaissance","Un dialogue avec le lecteur","Un aide-mémoire qui rappelle ce que l'on sait déjà","Une œuvre d'art philosophique"],correct:2,ref:"§A14"},
+  {q:"« Penser n'est rien d'autre que... » — quelle est la définition du cours ?",opts:["Apprendre par cœur les grandes œuvres","Écrire des dissertations rigoureuses","Le dialogue de l'âme avec elle-même","La maîtrise des règles de la méthode"],correct:2,ref:"§A16"},
+  {q:"Qu'est-ce que « problématiser » selon la définition centrale du cours ?",opts:["Trouver la bonne réponse à la question posée","Identifier les auteurs pertinents","Faire dérailler ce qui semble aller de soi","Construire un plan en trois parties équilibrées"],correct:2,ref:"§A15"},
+  {q:"La méthode peut-elle remplacer le savoir selon le cours ?",opts:["Oui, une bonne méthode compense le manque de savoir","Non, elle se situe en amont et en aval du savoir, mais ne peut le remplacer","Oui, si elle est suffisamment bien maîtrisée","Non, le savoir est inutile sans méthode"],correct:1,ref:"§A3"},
+  {q:"Quelle est la différence entre « signification » et « sens » ?",opts:["Ce sont des synonymes en philosophie du langage","La signification est plus importante que le sens","La signification est donnée (lexicale) ; le sens est construit en contexte","Le sens précède toujours la signification"],correct:2,ref:"§B4"},
+  {q:"Quels auteurs le cours recommande-t-il en priorité pour la lecture ?",opts:["Platon et Aristote","Descartes et Kant","Alain et Valéry (Propos, Cahiers)","Hegel et Heidegger"],correct:2,ref:"§A5"},
+  {q:"Selon le cours, que faut-il faire en priorité face à un sujet de dissertation ?",opts:["Rédiger immédiatement le plan en trois parties","Voir le sujet ainsi qu'au premier jour, comme un nouveau-né","Recenser tous les auteurs qui ont traité la question","Choisir d'emblée la thèse à défendre"],correct:1,ref:"§A6"},
+  {q:"Quels sont les trois risques du commentaire identifiés dans le cours ?",opts:["Le hors-sujet, la paraphrase, le manque de références","Le suivisme, la variation sur le thème majeur, l'explication terme à terme","La répétition, le contresens, le hors-sujet","La paraphrase, l'imitation, l'incompréhension"],correct:1,ref:"§C9-C11"},
+  {q:"Selon la théorie contextuelle du sens, comment un mot acquiert-il son sens ?",opts:["Par son étymologie et son histoire","Par sa définition dans le dictionnaire","Uniquement dans les contextes où il apparaît","Par l'intention de celui qui l'emploie"],correct:2,ref:"§B6"},
+  {q:"Quel est le rapport entre commenter et trahir selon le cours ?",opts:["Commenter est toujours une trahison et doit être évité","La parole est un acte de traduction, donc de trahison — les mots montrent la pensée mais la cachent","Trahir le texte est un risque mineur que le commentateur doit éviter","Commenter ne trahit jamais si l'on suit la lettre du texte"],correct:1,ref:"§C7"},
+];
+
+
+const SUGGESTED = [
+  "Qu'est-ce que problématiser ?","Comment faire une introduction ?",
+  "Dissertation vs commentaire ?","Qu'est-ce qu'une copie inquiète ?",
+  "Pourquoi lire Alain et Valéry ?","Le rôle de la voix dans la pensée ?",
+];
+
+function Wave({reverse,opacity=0.5}) {
+  return React.createElement('svg',{
+    width:"100%",height:"28",viewBox:"0 0 960 28",preserveAspectRatio:"none",
+    style:{display:'block',transform:reverse?'scaleX(-1)':undefined}
+  },
+    React.createElement('path',{d:"M0,14 C60,4 120,24 200,14 C280,4 340,24 420,14 C500,4 560,24 640,14 C720,4 780,24 860,14 C900,8 930,20 960,14 L960,28 L0,28 Z",fill:C.b2,fillOpacity:opacity*0.4}),
+    React.createElement('path',{d:"M0,18 C80,6 160,26 260,16 C360,6 440,26 540,16 C640,6 720,26 820,16 C880,8 920,22 960,18",fill:"none",stroke:C.b3,strokeWidth:"0.7",strokeOpacity:opacity}),
+    React.createElement('path',{d:"M0,10 C100,2 180,22 280,12 C380,2 460,22 560,12 C660,2 740,22 840,12 C900,6 930,16 960,12",fill:"none",stroke:C.b4,strokeWidth:"0.4",strokeOpacity:opacity*0.6})
+  );
+}
+
+function Seal({text,size=40}) {
+  return React.createElement('svg',{width:size,height:size,viewBox:"0 0 40 40",style:{flexShrink:0}},
+    React.createElement('circle',{cx:20,cy:20,r:18,fill:"none",stroke:C.b2,strokeWidth:"1.5"}),
+    React.createElement('circle',{cx:20,cy:20,r:15,fill:"none",stroke:C.b3,strokeWidth:"0.5"}),
+    React.createElement('text',{x:20,y:25,textAnchor:"middle",fontSize:"11",fill:C.b3,fontFamily:"Georgia, serif",fontStyle:"italic"},text)
+  );
+}
+
+function SectionHeader({label,title}) {
+  return React.createElement('div',{style:{marginBottom:24}},
+    React.createElement('div',{style:{fontSize:11,letterSpacing:4,color:C.b3,textTransform:'uppercase',marginBottom:8}},label),
+    React.createElement('div',{style:{fontSize:'clamp(20px,4vw,26px)',color:C.whiteBright,fontFamily:'Georgia, serif',fontStyle:'italic',lineHeight:1.3}},title),
+    React.createElement('div',{style:{marginTop:12,height:1,background:`linear-gradient(90deg,${C.b2},transparent)`}})
+  );
+}
+
+function DocSection({section,openId,setOpenId}) {
+  const isOpen = openId === section.id;
+  return React.createElement('div',{style:{marginBottom:10,border:`0.5px solid ${isOpen?C.borderBright:C.border}`,borderRadius:4,overflow:'hidden',transition:'border-color 0.3s'}},
+    React.createElement('button',{
+      onClick:()=>setOpenId(isOpen?null:section.id),
+      style:{width:'100%',background:isOpen?C.cardHover:C.card,border:'none',cursor:'pointer',padding:'14px 20px',display:'flex',justifyContent:'space-between',alignItems:'center'}
+    },
+      React.createElement('span',{style:{color:C.b4,fontFamily:'Georgia, serif',fontSize:15,letterSpacing:1}},section.title),
+      React.createElement('span',{style:{color:C.b3,fontSize:18,transition:'transform 0.3s',transform:isOpen?'rotate(180deg)':'none'}},'\u25BE')
+    ),
+    isOpen && React.createElement('div',{style:{background:C.surface,padding:'0 20px 20px'}},
+      section.items.map(([n,text])=>
+        React.createElement('div',{key:n,style:{display:'flex',gap:16,padding:'14px 0',borderBottom:`0.5px solid ${C.border}`}},
+          React.createElement('span',{style:{color:C.b2,fontFamily:'Georgia, serif',fontSize:13,minWidth:28,paddingTop:2,userSelect:'none'}},`§${n}`),
+          React.createElement('p',{style:{margin:0,color:C.white,fontSize:14,lineHeight:1.75,fontFamily:'Georgia, serif'}},text)
+        )
+      )
+    )
+  );
+}
+
+function Bubble({msg}) {
+  const isUser = msg.role==='user';
+  return React.createElement('div',{style:{display:'flex',justifyContent:isUser?'flex-end':'flex-start',marginBottom:14}},
+    !isUser && React.createElement('div',{style:{width:28,height:28,borderRadius:'50%',border:`1px solid ${C.b2}`,display:'flex',alignItems:'center',justifyContent:'center',marginRight:10,flexShrink:0,marginTop:2}},
+      React.createElement('span',{style:{fontSize:12,color:C.b3,fontFamily:'Georgia, serif'}},'\u554F')
+    ),
+    React.createElement('div',{style:{
+      maxWidth:'78%',padding:'12px 16px',borderRadius:isUser?'12px 4px 12px 12px':'4px 12px 12px 12px',
+      background:isUser?C.b1:C.card,border:`0.5px solid ${isUser?C.borderBright:C.borderMid}`,
+      color:C.white,fontSize:14,lineHeight:1.75,fontFamily:'Georgia, serif',whiteSpace:'pre-wrap'
+    }},msg.content)
+  );
+}
+
+function QCMResults({answers,onRetry}) {
+  const score = answers.filter((a,i)=>a===QCM_DATA[i].correct).length;
+  const pct = Math.round((score/QCM_DATA.length)*100);
+  const msg = pct>=80?"Excellent — la méthode est intégrée.":pct>=60?"Bien — quelques points à revoir.":"À reprendre — relire attentivement le cours.";
+  return React.createElement('div',{className:'fade-in'},
+    React.createElement('div',{style:{textAlign:'center',padding:'32px 0 24px'}},
+      React.createElement('div',{style:{fontSize:64,color:C.b3,fontFamily:'Georgia, serif',fontWeight:'bold'}},`${pct}%`),
+      React.createElement('div',{style:{color:C.mutedLight,fontSize:13,marginTop:4}},`${score} / ${QCM_DATA.length} réponses correctes`),
+      React.createElement('div',{style:{color:C.white,fontSize:16,marginTop:12,fontFamily:'Georgia, serif',fontStyle:'italic'}},msg)
+    ),
+    QCM_DATA.map((item,i)=>{
+      const correct=answers[i]===item.correct;
+      return React.createElement('div',{key:i,style:{marginBottom:10,padding:'12px 16px',border:`0.5px solid ${correct?C.b2:'#602020'}`,borderRadius:4,background:correct?'#071420':'#120a0a'}},
+        React.createElement('div',{style:{color:correct?C.b4:'#e06060',fontSize:13,marginBottom:4}},`${correct?'✓':'✗'} ${item.q}`),
+        React.createElement('div',{style:{color:C.mutedLight,fontSize:12}},`Bonne réponse : ${item.opts[item.correct]} — `,React.createElement('em',{style:{color:C.b3}},item.ref))
+      );
+    }),
+    React.createElement('button',{onClick:onRetry,style:{marginTop:20,width:'100%',padding:'12px',background:'transparent',border:`1px solid ${C.b2}`,borderRadius:4,color:C.b4,cursor:'pointer',fontFamily:'Georgia, serif',fontSize:14,letterSpacing:2}},
+      '\u21BA  RECOMMENCER'
+    )
+  );
+}
+
+function App() {
+  const [tab,setTab] = React.useState('presentation');
+  const [docOpen,setDocOpen] = React.useState('A');
+  const [chat,setChat] = React.useState([{role:'assistant',content:"Bonjour. Je suis ici pour vous accompagner dans la lecture et la pratique de ce cours de méthodologie philosophique.\n\nPosez-moi une question sur la dissertation, le commentaire, la problématisation ou l'introduction — je répondrai à partir du cours."}]);
+  const [chatInput,setChatInput] = React.useState('');
+  const [chatLoading,setChatLoading] = React.useState(false);
+  const [qcmIdx,setQcmIdx] = React.useState(0);
+  const [qcmAnswers,setQcmAnswers] = React.useState([]);
+  const [qcmSelected,setQcmSelected] = React.useState(null);
+  const [qcmDone,setQcmDone] = React.useState(false);
+  const chatEnd = React.useRef(null);
+
+  React.useEffect(()=>{chatEnd.current?.scrollIntoView({behavior:'smooth'})},[chat]);
+
+  const TABS=[
+    {id:'presentation',label:'Présentation'},
+    {id:'video',label:'Vidéo'},
+    {id:'document',label:'Document'},
+    {id:'dialogue',label:'Dialogue'},
+    {id:'qcm',label:'Q·C·M'},
+  ];
+
+  const sendChat = async(text)=>{
+    if(!text.trim()) return;
+    const userMsg={role:'user',content:text};
+    const newChat=[...chat,userMsg];
+    setChat(newChat);
+    setChatInput('');
+    setChatLoading(true);
+    try {
+      const msgs=newChat.map(m=>({role:m.role,content:m.content}));
+      const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+API_KEY},
+        body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:1000,messages:[{role:'system',content:SYSTEM_PROMPT},...msgs]})
+      });
+      const data=await res.json();
+      const reply=data.choices?.[0]?.message?.content||'Je ne peux pas répondre à cette question à partir du cours.';
+      setChat(prev=>[...prev,{role:'assistant',content:reply}]);
+    } catch(e) {
+      setChat(prev=>[...prev,{role:'assistant',content:"Une erreur est survenue. Veuillez réessayer."}]);
+    }
+    setChatLoading(false);
+  };
+
+  const handleQcmSelect=(idx)=>setQcmSelected(idx);
+  const handleQcmNext=()=>{
+    if(qcmSelected===null) return;
+    const newAnswers=[...qcmAnswers,qcmSelected];
+    setQcmAnswers(newAnswers);
+    setQcmSelected(null);
+    if(qcmIdx+1>=QCM_DATA.length){setQcmDone(true);}
+    else{setQcmIdx(qcmIdx+1);}
+  };
+  const resetQcm=()=>{setQcmIdx(0);setQcmAnswers([]);setQcmSelected(null);setQcmDone(false);};
+
+  const btn=(active)=>({
+    padding:'11px 18px',background:active?C.b1:'transparent',
+    border:`0.5px solid ${active?C.borderBright:C.borderMid}`,borderRadius:4,
+    color:active?C.whiteBright:C.mutedLight,cursor:'pointer',fontSize:13,
+    fontFamily:'Georgia, serif',letterSpacing:0.5,transition:'all 0.2s'
+  });
+
+  return React.createElement('div',{style:{background:C.bg,minHeight:'100vh',color:C.white,fontFamily:'Georgia, serif'}},
+
+    // HEADER
+    React.createElement('div',null,
+      React.createElement(Wave,null),
+      React.createElement('div',{style:{padding:'40px 24px 28px',textAlign:'center',position:'relative'}},
+        React.createElement('div',{style:{position:'absolute',right:20,top:20,opacity:0.5}},React.createElement(Seal,{text:'\u65B9',size:42})),
+        React.createElement('div',{style:{position:'absolute',left:20,top:20,opacity:0.5}},React.createElement(Seal,{text:'\u6CD5',size:42})),
+        React.createElement('div',{style:{fontSize:11,letterSpacing:4,color:C.b3,textTransform:'uppercase',marginBottom:14}},"Série · Philosophie Vivante · Application 1 / 5"),
+        React.createElement('h1',{style:{fontSize:'clamp(28px,6vw,48px)',color:C.whiteBright,fontFamily:'Georgia, serif',margin:0,lineHeight:1.15}},
+          "Méthodologie",React.createElement('br'),
+          React.createElement('em',{style:{color:C.b4}},"philosophique")
+        ),
+        React.createElement('div',{style:{fontSize:14,color:C.mutedLight,marginTop:12,letterSpacing:1}},"Le dialogue de l'âme avec elle-même"),
+        React.createElement('div',{style:{marginTop:8,fontSize:12,color:C.muted,letterSpacing:1}},"Synthèse du cours de Robert Lévy · Collège Sévigné")
+      ),
+      React.createElement(Wave,{reverse:true,opacity:0.35})
+    ),
+
+    // NAV
+    React.createElement('nav',{style:{display:'flex',justifyContent:'center',gap:0,borderTop:`0.5px solid ${C.borderMid}`,borderBottom:`0.5px solid ${C.borderMid}`,background:C.surface,overflowX:'auto'}},
+      TABS.map(t=>React.createElement('button',{
+        key:t.id,
+        onClick:()=>setTab(t.id),
+        style:{padding:'13px 16px',background:'transparent',border:'none',cursor:'pointer',fontSize:11,letterSpacing:3,textTransform:'uppercase',color:tab===t.id?C.b4:C.muted,borderBottom:tab===t.id?`2px solid ${C.b3}`:'2px solid transparent',transition:'all 0.2s',whiteSpace:'nowrap'}
+      },t.label))
+    ),
+
+    // MAIN
+    React.createElement('main',{style:{maxWidth:740,margin:'0 auto',padding:'32px 20px 60px'}},
+
+      // PRÉSENTATION
+      tab==='presentation' && React.createElement('div',{className:'fade-in'},
+        React.createElement(SectionHeader,{label:"Présentation",title:"Qu'est-ce que philosopher ?"}),
+        React.createElement('p',{style:{color:C.white,fontSize:15,lineHeight:1.85}},"Cette application est le fruit d'une démarche pédagogique vivante : lire, enregistrer sa voix, s'écouter, prendre des notes. Elle montre qu'à un élève que penser, écrire et parler sont un seul et même geste."),
+        React.createElement('blockquote',{style:{borderLeft:`2px solid ${C.b2}`,paddingLeft:20,margin:'24px 0',fontStyle:'italic',fontSize:15,lineHeight:1.8,color:C.white}},
+          "« Savoir — lorsqu'on est en train d'écrire — se lire, savoir lorsqu'on est en train de parler s'entendre : penser n'est rien d'autre que cela, dialogue de l'âme avec elle-même. »",
+          React.createElement('div',{style:{marginTop:10,fontSize:12,color:C.mutedLight,fontStyle:'normal',letterSpacing:1}},"— Synthèse du cours, Introduction §16")
+        ),
+        React.createElement('p',{style:{color:C.white,fontSize:15,lineHeight:1.85}},"Le contenu est tiré d'un cours de synthèse sur la méthodologie philosophique conçu par ",React.createElement('strong',{style:{color:C.b4}},"Robert Lévy")," au Collège Sévigné, pour la préparation au CAPES et à l'agrégation de philosophie."),
+        React.createElement('div',{style:{marginTop:28,padding:'20px 24px',background:C.card,border:`0.5px solid ${C.borderMid}`,borderRadius:4}},
+          React.createElement('div',{style:{fontSize:11,letterSpacing:3,color:C.b3,marginBottom:14,textTransform:'uppercase'}},"Structure du cours"),
+          [['A','Remarques générales','16 paragraphes'],['B','Remarques sur la dissertation','9 paragraphes'],['C','Remarques sur le commentaire','11 paragraphes']].map(([id,title,sub])=>
+            React.createElement('div',{key:id,style:{display:'flex',alignItems:'center',gap:16,padding:'10px 0',borderBottom:`0.5px solid ${C.border}`}},
+              React.createElement('span',{style:{width:28,height:28,borderRadius:'50%',border:`1px solid ${C.b2}`,display:'flex',alignItems:'center',justifyContent:'center',color:C.b3,fontSize:13,flexShrink:0}},id),
+              React.createElement('div',null,
+                React.createElement('div',{style:{color:C.white,fontSize:14}},title),
+                React.createElement('div',{style:{color:C.muted,fontSize:12,marginTop:2}},sub)
+              )
+            )
+          )
+        ),
+        React.createElement('div',{style:{marginTop:24,display:'flex',gap:10,flexWrap:'wrap'}},
+          React.createElement('button',{style:btn(false),onClick:()=>setTab('video')},"▷ Voir la vidéo"),
+          React.createElement('button',{style:btn(false),onClick:()=>setTab('document')},"巻 Lire le document"),
+          React.createElement('button',{style:btn(false),onClick:()=>setTab('dialogue')},"問 Poser une question")
+        )
+      ),
+
+      // VIDÉO
+      tab==='video' && React.createElement('div',{className:'fade-in'},
+        React.createElement(SectionHeader,{label:"Vidéo pédagogique",title:"Observer le geste de la pensée"}),
+        React.createElement('p',{style:{color:C.white,fontSize:15,lineHeight:1.85,marginBottom:20}},"Cette vidéo montre en acte la démarche complète : lire un texte philosophique, en enregistrer une synthèse vocale, écouter sa propre voix, et prendre des notes manuscrites."),
+        React.createElement('div',{style:{position:'relative',paddingBottom:'56.25%',height:0,overflow:'hidden',borderRadius:4,border:`0.5px solid ${C.borderMid}`}},
+          React.createElement('iframe',{
+            style:{position:'absolute',top:0,left:0,width:'100%',height:'100%'},
+            src:"https://www.youtube.com/embed/udoACyZ7Fpw",
+            title:"Méthodologie philosophique — Observer le geste de la pensée",
+            frameBorder:"0",
+            allow:"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+            allowFullScreen:true
+          })
+        ),
+        React.createElement('div',{style:{marginTop:20,padding:'16px 20px',background:C.card,border:`0.5px solid ${C.border}`,borderRadius:4}},
+          React.createElement('div',{style:{fontSize:11,letterSpacing:3,color:C.b3,marginBottom:10,textTransform:'uppercase'}},"Au programme"),
+          ['Remarques générales sur la méthode (§A)','La dissertation : problématiser = faire dérailler l\'évidence','La copie inquiète : tension interne et rebondissement','Le commentaire : signifiant / signifié / interprétation'].map((item,i)=>
+            React.createElement('div',{key:i,style:{display:'flex',gap:12,alignItems:'flex-start',padding:'7px 0',borderBottom:i<3?`0.5px solid ${C.border}`:'none'}},
+              React.createElement('span',{style:{color:C.b2,fontSize:12,marginTop:2}},'→'),
+              React.createElement('span',{style:{color:C.white,fontSize:14}},item)
+            )
+          )
+        ),
+        React.createElement('div',{style:{marginTop:14}},
+          React.createElement('a',{href:"https://youtu.be/udoACyZ7Fpw",target:"_blank",rel:"noopener noreferrer",
+            style:{display:'inline-block',padding:'10px 20px',background:'transparent',border:`0.5px solid ${C.borderBright}`,borderRadius:4,color:C.b4,fontSize:11,letterSpacing:2,textDecoration:'none',textTransform:'uppercase'}
+          },"↗ Ouvrir sur YouTube")
+        )
+      ),
+
+      // DOCUMENT
+      tab==='document' && React.createElement('div',{className:'fade-in'},
+        React.createElement(SectionHeader,{label:"Document intégral",title:"Méthodologie philosophique"}),
+        React.createElement('div',{style:{marginBottom:18,padding:'14px 18px',background:C.card,border:`0.5px solid ${C.border}`,borderRadius:4,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:12}},
+          React.createElement('div',null,
+            React.createElement('div',{style:{color:C.white,fontSize:14}},"Synthèse du cours de Robert Lévy"),
+            React.createElement('div',{style:{color:C.muted,fontSize:12,marginTop:2}},"Par Yann Frédéric Mangourny · CAPES & Agrégation")
+          ),
+          React.createElement('a',{href:"https://youtu.be/udoACyZ7Fpw",target:"_blank",rel:"noopener noreferrer",
+            style:{padding:'8px 14px',background:'transparent',border:`0.5px solid ${C.borderMid}`,borderRadius:4,color:C.b4,fontSize:11,letterSpacing:2,textDecoration:'none',textTransform:'uppercase',whiteSpace:'nowrap'}
+          },"↗ Vidéo")
+        ),
+        DOC_SECTIONS.map(sec=>React.createElement(DocSection,{key:sec.id,section:sec,openId:docOpen,setOpenId:setDocOpen})),
+        React.createElement('div',{style:{marginTop:24,padding:'16px 20px',background:C.card,border:`0.5px solid ${C.border}`,borderRadius:4,textAlign:'center'}},
+          React.createElement('div',{style:{color:C.mutedLight,fontSize:12,marginBottom:10}},"Vous avez des questions sur ce document ?"),
+          React.createElement('button',{style:btn(true),onClick:()=>setTab('dialogue')},"問 Interroger l'assistant pédagogique")
+        )
+      ),
+
+      // DIALOGUE
+      tab==='dialogue' && React.createElement('div',{className:'fade-in'},
+        React.createElement(SectionHeader,{label:"Assistant pédagogique",title:"Questionnez la méthode"}),
+        React.createElement('p',{style:{color:C.mutedLight,fontSize:14,marginBottom:20}},"Posez vos questions sur la méthodologie philosophique — dissertation, commentaire, problématisation, introduction. L'assistant répond à partir du cours."),
+        React.createElement('div',{style:{background:C.surface,border:`0.5px solid ${C.borderMid}`,borderRadius:4,padding:16,minHeight:280,maxHeight:420,overflowY:'auto',marginBottom:12}},
+          React.createElement('div',{style:{fontSize:11,letterSpacing:3,color:C.b2,marginBottom:16,paddingBottom:8,borderBottom:`0.5px solid ${C.border}`,textTransform:'uppercase'}},"● Assistant pédagogique — actif"),
+          chat.map((m,i)=>React.createElement(Bubble,{key:i,msg:m})),
+          chatLoading && React.createElement('div',{style:{display:'flex',gap:10,alignItems:'center',color:C.mutedLight,fontSize:13,paddingLeft:38}},
+            React.createElement('span',{style:{animation:'pulse 1s infinite',display:'inline-block'}},'●'),
+            React.createElement('span',null,"En train de répondre…")
+          ),
+          React.createElement('div',{ref:chatEnd})
+        ),
+        React.createElement('div',{style:{marginBottom:12,display:'flex',flexWrap:'wrap',gap:6}},
+          SUGGESTED.map((q,i)=>React.createElement('button',{key:i,onClick:()=>sendChat(q),
+            style:{padding:'7px 12px',background:'transparent',border:`0.5px solid ${C.borderMid}`,borderRadius:20,color:C.mutedLight,cursor:'pointer',fontSize:12,fontFamily:'Georgia, serif'}
+          },q))
+        ),
+        React.createElement('div',{style:{display:'flex',gap:8}},
+          React.createElement('input',{
+            value:chatInput,onChange:e=>setChatInput(e.target.value),
+            onKeyDown:e=>e.key==='Enter'&&!e.shiftKey&&sendChat(chatInput),
+            placeholder:"Posez votre question sur la méthode…",
+            disabled:chatLoading,
+            style:{flex:1,background:C.card,border:`0.5px solid ${C.borderMid}`,borderRadius:4,padding:'12px 16px',color:C.white,fontSize:14,fontFamily:'Georgia, serif',outline:'none'}
+          }),
+          React.createElement('button',{
+            onClick:()=>sendChat(chatInput),disabled:chatLoading||!chatInput.trim(),
+            style:{padding:'12px 20px',background:C.b1,border:`0.5px solid ${C.borderBright}`,borderRadius:4,color:C.b4,cursor:'pointer',fontSize:12,letterSpacing:2,fontFamily:'Georgia, serif'}
+          },"Envoyer")
+        )
+      ),
+
+      // QCM
+      tab==='qcm' && React.createElement('div',{className:'fade-in'},
+        React.createElement(SectionHeader,{label:"Questions · Choix · Multiple",title:"Évaluer la méthode"}),
+        qcmDone
+          ? React.createElement(QCMResults,{answers:qcmAnswers,onRetry:resetQcm})
+          : React.createElement('div',null,
+              React.createElement('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}},
+                React.createElement('span',{style:{color:C.mutedLight,fontSize:12}},`Question ${qcmIdx+1} / ${QCM_DATA.length}`),
+                React.createElement('div',{style:{flex:1,margin:'0 16px',height:3,background:C.border,borderRadius:2,overflow:'hidden'}},
+                  React.createElement('div',{style:{height:'100%',width:`${(qcmIdx/QCM_DATA.length)*100}%`,background:C.b3,transition:'width 0.4s'}})
+                ),
+                React.createElement('span',{style:{color:C.b3,fontSize:12,letterSpacing:2}},`${Math.round((qcmIdx/QCM_DATA.length)*100)}%`)
+              ),
+              React.createElement('div',{style:{padding:'20px 22px',background:C.card,border:`0.5px solid ${C.borderMid}`,borderRadius:4,marginBottom:16}},
+                React.createElement('p',{style:{margin:0,color:C.whiteBright,fontSize:16,lineHeight:1.6,fontFamily:'Georgia, serif',fontStyle:'italic'}},QCM_DATA[qcmIdx].q)
+              ),
+              React.createElement('div',{style:{display:'flex',flexDirection:'column',gap:8,marginBottom:20}},
+                QCM_DATA[qcmIdx].opts.map((opt,i)=>
+                  React.createElement('button',{key:i,onClick:()=>handleQcmSelect(i),
+                    style:{padding:'14px 18px',background:qcmSelected===i?C.b1:C.surface,border:`0.5px solid ${qcmSelected===i?C.borderBright:C.borderMid}`,borderRadius:4,color:qcmSelected===i?C.whiteBright:C.white,cursor:'pointer',textAlign:'left',fontSize:14,fontFamily:'Georgia, serif',lineHeight:1.5,transition:'all 0.2s',display:'flex',gap:12,alignItems:'flex-start'}
+                  },
+                    React.createElement('span',{style:{color:qcmSelected===i?C.b4:C.muted,fontSize:12,minWidth:20,paddingTop:2}},`${String.fromCharCode(65+i)}.`),
+                    React.createElement('span',null,opt)
+                  )
+                )
+              ),
+              React.createElement('button',{onClick:handleQcmNext,disabled:qcmSelected===null,
+                style:{width:'100%',padding:'13px',background:qcmSelected!==null?C.b1:C.surface,border:`0.5px solid ${qcmSelected!==null?C.borderBright:C.border}`,borderRadius:4,color:qcmSelected!==null?C.b4:C.muted,cursor:qcmSelected!==null?'pointer':'default',fontSize:12,letterSpacing:3,textTransform:'uppercase',fontFamily:'Georgia, serif',transition:'all 0.2s'}
+              },qcmIdx+1<QCM_DATA.length?'Question suivante →':'Voir les résultats →')
+            )
+      )
+    ),
+
+    // FOOTER
+    React.createElement(Wave,null),
+    React.createElement('div',{style:{background:C.surface,borderTop:`0.5px solid ${C.border}`,padding:'20px 24px',textAlign:'center'}},
+      React.createElement('div',{style:{color:C.muted,fontSize:12,lineHeight:1.8}},
+        "Méthodologie philosophique — Synthèse du cours de Robert Lévy (Collège Sévigné)",
+        React.createElement('br'),
+        React.createElement('span',{style:{color:C.mutedLight}},"© Yann Frédéric Mangourny · AFCIP"),
+        React.createElement('br'),
+        React.createElement('span',{style:{color:C.b2,fontSize:11,letterSpacing:2}},
+          "Série ",React.createElement('em',null,"Philosophie vivante")," — Application 1 / 5"
+        )
+      )
+    )
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(React.createElement(App));
+</script>
+</body>
+</html>
